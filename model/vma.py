@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 import model.dd
-
+from model.reader_cache import ReaderCache
 
 VMA_columns = ['Value', 'Units', 'Raw', 'Weight', 'Exclude?', 'Region', 'Main Region', 'TMR']
 
@@ -16,7 +16,7 @@ def populate_fixed_summaries(vma_dict, filename):
       vma_dict: dict indexed by VMA Title
       filename: VMA_info CSV file with fixed summary data for Mean, High, Low
     """
-    vma_info_df = pd.read_csv(filename, index_col=0)
+    vma_info_df = ReaderCache.read_csv(filename, index_col=0)
     for _, row in vma_info_df.iterrows():
         title = row['Title on xls']
         fixed_mean = row.get('Fixed Mean', np.nan)
@@ -72,7 +72,7 @@ class VMA:
             self.source_data = pd.DataFrame()
 
     def _read_csv(self, filename):
-        xl_df = pd.read_csv(filename, index_col=False, skipinitialspace=True, skip_blank_lines=True)
+        xl_df = ReaderCache.read_csv(filename, index_col=False, skipinitialspace=True, skip_blank_lines=True)
         self.source_data = xl_df
         if self.use_weight:
             assert not all(pd.isnull(xl_df['Weight'])), "'Use weight' selected but no weights to use"

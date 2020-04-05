@@ -9,7 +9,7 @@ import fair.RCPs.rcp60
 import fair.RCPs.rcp85
 import numpy as np
 import pandas as pd
-
+from model.reader_cache import ReaderCache
 
 topdir = pathlib.Path(__file__).parents[1]
 baselineCO2_path = topdir.joinpath('data', 'baselineCO2.csv')
@@ -118,7 +118,7 @@ def baseline_emissions():
             ) / CO2_MULT)
     baseline.index = baseline.index.astype(int)
     baseline.index.name = 'Year'
-    ddCO2 = pd.read_csv(str(baselineCO2_path), header=0, index_col=0, skipinitialspace=True,
+    ddCO2 = ReaderCache.read_csv(str(baselineCO2_path), header=0, index_col=0, skipinitialspace=True,
             skip_blank_lines=True, comment='#', squeeze=True)
     ddCO2.index = ddCO2.index.astype(int)
     baseline.update(ddCO2 / CO2_MULT)

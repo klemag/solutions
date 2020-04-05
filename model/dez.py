@@ -16,6 +16,7 @@ import re
 import pandas as pd
 from model import dd
 from model.metaclass_cache import MetaclassCache
+from model.reader_cache import ReaderCache
 
 OCEAN_CSV_PATH = pathlib.Path(__file__).parents[1].joinpath('data', 'ocean')
 
@@ -49,13 +50,13 @@ class DEZ(object, metaclass=MetaclassCache):
         'DEZ Data'!A63:AD70
         Calculates solution specific Drawdown ocean allocation using values from 'allocation' directory.
         """
-        df = pd.read_csv(OCEAN_CSV_PATH.joinpath('dez', 'solution_oa_template.csv'), index_col=0)
+        df = ReaderCache.read_csv(OCEAN_CSV_PATH.joinpath('dez', 'solution_oa_template.csv'), index_col=0)
         df = df.fillna(0)
         for tdr in self.regimes:
             tdr_path = OCEAN_CSV_PATH.joinpath('allocation', self._to_filename(tdr))
             for col in df:
                 dez_path = tdr_path.joinpath(self._to_filename(col) + '.csv')
-                oa_df = pd.read_csv(dez_path, index_col=0)
+                oa_df = ReaderCache.read_csv(dez_path, index_col=0)
                 total_perc_allocated = oa_df.loc[self.solution_name]['Total % allocated']
                 if total_perc_allocated > 0:
                     df.at[tdr, col] = total_perc_allocated
@@ -68,7 +69,7 @@ class DEZ(object, metaclass=MetaclassCache):
 
         NOTE: this matrix is in development and WILL change. Make sure to update accordingly.
         """
-        row = pd.read_csv(OCEAN_CSV_PATH.joinpath('dez', 'solution_dez_matrix.csv'),
+        row = ReaderCache.read_csv(OCEAN_CSV_PATH.joinpath('dez', 'solution_dez_matrix.csv'),
                 index_col=0).loc[self.solution_name]
         self.applicable_zones = row[row].index.tolist()
 
@@ -80,7 +81,7 @@ class DEZ(object, metaclass=MetaclassCache):
         """
         self.world_ocean_alloc_dict = {}
         for tdr in self.regimes:
-            df = pd.read_csv(OCEAN_CSV_PATH.joinpath('world', self._to_filename(tdr) + '.csv'),
+            df = ReaderCache.read_csv(OCEAN_CSV_PATH.joinpath('world', self._to_filename(tdr) + '.csv'),
                     index_col=0).drop('Total Area (Mha)', 1)
             self.world_ocean_alloc_dict[tdr] = df.mul(self.soln_ocean_alloc_df.loc[tdr], axis=1)
 

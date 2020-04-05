@@ -10,7 +10,7 @@ from functools import lru_cache
 import pandas as pd
 from model import dd
 from model.metaclass_cache import MetaclassCache
-
+from model.reader_cache import ReaderCache
 
 def tla_per_region(land_dist, custom_world_values=None):
     """
@@ -46,7 +46,7 @@ class CustomTLA(object, metaclass=MetaclassCache):
         Args:
             filename: path to 'custom_tla_data.csv' file
         """
-        self.df = pd.read_csv(filename, header=0, index_col=0,
+        self.df = ReaderCache.read_csv(filename, header=0, index_col=0,
                 skipinitialspace=True, skip_blank_lines=True)
 
     def _avg_high_low(self):

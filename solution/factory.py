@@ -2,12 +2,12 @@
 
 import importlib
 import pathlib
-
+from model.reader_cache import ReaderCache
 import pandas as pd
 
 def all_solutions():
     path = pathlib.Path(__file__).parents[1].joinpath('data', 'overview', 'solutions.csv')
-    overview = pd.read_csv(path, index_col=False, skipinitialspace=True, header=0,
+    overview = ReaderCache.read_csv(path, index_col=False, skipinitialspace=True, header=0,
             skip_blank_lines=True, comment='#')
     return sorted(overview['DirName'].dropna().tolist())
 

@@ -1,3 +1,4 @@
+
 """Unit Adoption module."""
 
 from functools import lru_cache
@@ -7,6 +8,7 @@ import pandas as pd
 from model import emissionsfactors
 from model.dd import REGIONS, OCEAN_REGIONS
 from model.advanced_controls import SOLUTION_CATEGORY
+from model.reader_cache import ReaderCache
 
 class UnitAdoption:
     """Implementation for the Unit Adoption module.
@@ -47,7 +49,7 @@ class UnitAdoption:
            SolarPVUtil 'Unit Adoption Calculations'!P16:Z63
         """
         filename = os.path.join(self.datadir, 'unitadoption_ref_population.csv')
-        result = pd.read_csv(filename, index_col=0, skipinitialspace=True,
+        result = ReaderCache.read_csv(filename, index_col=0, skipinitialspace=True,
                              skip_blank_lines=True, comment='#')
         result.index = result.index.astype(int)
         result.name = "ref_population"
@@ -59,7 +61,7 @@ class UnitAdoption:
            SolarPVUtil 'Unit Adoption Calculations'!AB16:AL63
         """
         filename = os.path.join(self.datadir, 'unitadoption_ref_gdp.csv')
-        result = pd.read_csv(filename, index_col=0, skipinitialspace=True,
+        result = ReaderCache.read_csv(filename, index_col=0, skipinitialspace=True,
                              skip_blank_lines=True, comment='#')
         result.index = result.index.astype(int)
         result.name = "ref_gdp"
@@ -108,7 +110,7 @@ class UnitAdoption:
            SolarPVUtil 'Unit Adoption Calculations'!P68:Z115
         """
         filename = os.path.join(self.datadir, 'unitadoption_pds_population.csv')
-        result = pd.read_csv(filename, index_col=0, skipinitialspace=True,
+        result = ReaderCache.read_csv(filename, index_col=0, skipinitialspace=True,
                              skip_blank_lines=True, comment='#')
         result.index = result.index.astype(int)
         result.name = "pds_population"
@@ -120,7 +122,7 @@ class UnitAdoption:
            SolarPVUtil 'Unit Adoption Calculations'!AB68:AL115
         """
         filename = os.path.join(self.datadir, 'unitadoption_pds_gdp.csv')
-        result = pd.read_csv(filename, index_col=0, skipinitialspace=True,
+        result = ReaderCache.read_csv(filename, index_col=0, skipinitialspace=True,
                              skip_blank_lines=True, comment='#')
         result.index = result.index.astype(int)
         result.name = "pds_gdp"

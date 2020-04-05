@@ -7,6 +7,7 @@ import re
 from model import interpolation
 from model import dd
 from model.metaclass_cache import MetaclassCache
+from model.reader_cache import ReaderCache
 import numpy as np
 import pandas as pd
 
@@ -62,7 +63,7 @@ class AdoptionData(object, metaclass=MetaclassCache):
                 else:
                     sources = value
                 for name, filename in sources.items():
-                    df = pd.read_csv(filename, header=0, index_col=0, skipinitialspace=True,
+                    df = ReaderCache.read_csv(filename, header=0, index_col=0, skipinitialspace=True,
                             skip_blank_lines=True, comment='#')
                     for region in dd.REGIONS:
                         df_per_region[region].loc[:, name] = df.loc[:, region]

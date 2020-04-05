@@ -6,6 +6,7 @@ import re
 
 from model import dd
 from model.metaclass_cache import MetaclassCache
+from model.reader_cache import ReaderCache
 from model import interpolation
 import numpy as np
 import pandas as pd
@@ -67,7 +68,7 @@ class TAM(object, metaclass=MetaclassCache):
                 sources = {name: value} if self._is_path(value) else value
 
                 for name, filename in sources.items():
-                    df = pd.read_csv(filename, header=0, index_col="Year", skipinitialspace=True,
+                    df = ReaderCache.read_csv(filename, header=0, index_col="Year", skipinitialspace=True,
                             skip_blank_lines=True, comment='#', usecols=["Year"] + regions)
                     for region in regions:
                         df_per_region[region][name] = df[region]
@@ -77,7 +78,7 @@ class TAM(object, metaclass=MetaclassCache):
                 sources = {name: value} if self._is_path(value) else value
 
                 for name, filename in sources.items():
-                    df = pd.read_csv(filename, header=0, index_col="Year", skipinitialspace=True,
+                    df = ReaderCache.read_csv(filename, header=0, index_col="Year", skipinitialspace=True,
                             skip_blank_lines=True, comment='#', usecols=["Year", main_region])
                     df_per_region[main_region_pds][name] = df[main_region]
 

@@ -16,6 +16,7 @@ import re
 import pandas as pd
 from model import dd
 from model.metaclass_cache import MetaclassCache
+from model.reader_cache import ReaderCache
 
 LAND_CSV_PATH = pathlib.Path(__file__).parents[1].joinpath('data', 'land')
 
@@ -57,7 +58,7 @@ class AEZ(object, metaclass=MetaclassCache):
 
            'AEZ Data'!A63:AD70
         """
-        df = pd.read_csv(LAND_CSV_PATH.joinpath('aez', 'solution_la_template.csv'), index_col=0)
+        df = ReaderCache.read_csv(LAND_CSV_PATH.joinpath('aez', 'solution_la_template.csv'), index_col=0)
         if self.ignore_allocation:
             self.soln_land_alloc_df = df.fillna(1)
             return
@@ -70,7 +71,7 @@ class AEZ(object, metaclass=MetaclassCache):
                 if col.startswith('AEZ29'):  # this zone is not included in land allocation
                     continue
                 aez_path = tmr_path.joinpath(self._to_filename(col) + '.csv')
-                la_df = pd.read_csv(aez_path, index_col=0)
+                la_df = ReaderCache.read_csv(aez_path, index_col=0)
                 total_perc_allocated = la_df.loc[self.solution_name]['Total % allocated']
                 if total_perc_allocated > 0:
                     df.at[tmr, col] = total_perc_allocated
@@ -85,7 +86,7 @@ class AEZ(object, metaclass=MetaclassCache):
            applicable_zones will be redundant in solutions which use DD allocation.
            'AEZ Data'!A2:AD29
         """
-        row = pd.read_csv(LAND_CSV_PATH.joinpath('aez', 'solution_aez_matrix.csv'),
+        row = ReaderCache.read_csv(LAND_CSV_PATH.joinpath('aez', 'solution_aez_matrix.csv'),
                 index_col=0).loc[self.solution_name]
         self.applicable_zones = row[row].index.tolist()
 
@@ -98,7 +99,7 @@ class AEZ(object, metaclass=MetaclassCache):
         """
         self.world_land_alloc_dict = {}
         for tmr in self.regimes:
-            df = pd.read_csv(LAND_CSV_PATH.joinpath('world', self._to_filename(tmr) + '.csv'),
+            df = ReaderCache.read_csv(LAND_CSV_PATH.joinpath('world', self._to_filename(tmr) + '.csv'),
                     index_col=0).drop('Total Area (km2)', 1)
             # apply fixed world fraction to each region
             self.world_land_alloc_dict[tmr] = df.mul(self.soln_land_alloc_df.loc[tmr],

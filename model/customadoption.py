@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 from model.metaclass_cache import MetaclassCache
+from model.reader_cache import ReaderCache
 from model.dd import REGIONS, MAIN_REGIONS
 import pandas as pd
 import numpy as np
@@ -67,14 +68,13 @@ class CustomAdoption(object, metaclass=MetaclassCache):
 
     def _read_csv(self, filename):
         """Read in a CSV file from filename."""
-        df = pd.read_csv(filename, header=0, index_col=0, skipinitialspace=True,
+        df = ReaderCache.read_csv(filename, header=0, index_col=0, skipinitialspace=True,
                          skip_blank_lines=True, comment='#', dtype=np.float64)
         df.index = df.index.astype(int)
         df.index.name = 'Year'
         assert list(df.columns) == REGIONS
         assert list(df.index) == YEARS
         return df
-
 
     def _linear_forecast(self, datapoints, start_year, end_year):
         """Interpolates a line between datapoints, and fills in a dataframe.
@@ -85,6 +85,7 @@ class CustomAdoption(object, metaclass=MetaclassCache):
            end_year: year the trend should extend to, usually past the last datapoint
         """
         df = pd.DataFrame(columns=datapoints.columns, dtype='float')
+
         for col in df.columns:
             for i in range(datapoints.index.size - 1):
                 year1 = datapoints.index[i]
